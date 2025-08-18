@@ -1,9 +1,12 @@
-﻿using ProvaPub.Models;
+﻿using ProvaPub.Entities;
+using ProvaPub.Extensions;
+using ProvaPub.Interfaces;
+using ProvaPub.Models;
 using ProvaPub.Repository;
 
 namespace ProvaPub.Services
 {
-	public class ProductService
+	public class ProductService : IProductService
 	{
 		TestDbContext _ctx;
 
@@ -12,14 +15,9 @@ namespace ProvaPub.Services
 			_ctx = ctx;
 		}
 
-		public ProductList  ListProducts(int page)
+		public PagedResult<Product> ListProducts(int page)
 		{
-			var pag = new ProductList() {  HasNext=false, TotalCount = 10, Products = _ctx.Products.ToList() };
-            var result = pag.Products.Skip((page - 1) * pag.TotalCount)
-                .Take(pag.TotalCount)
-                .ToList();
-
-            return new ProductList() { HasNext = false, TotalCount = 10, Products = result };
+			return _ctx.Products.ToPagedResult(page);
 		}
 	}
 }

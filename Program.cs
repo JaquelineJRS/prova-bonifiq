@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ProvaPub.IoC;
 using ProvaPub.Repository;
 using ProvaPub.Services;
 
@@ -11,9 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<RandomService>();
 builder.Services.AddDbContext<TestDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("ctx")));
+builder.Services.AddDependencyResolver();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
