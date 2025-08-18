@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using ProvaPub.Models;
 using ProvaPub.Repository;
+using System;
 
 namespace ProvaPub.Services
 {
@@ -19,11 +21,25 @@ namespace ProvaPub.Services
         }
         public async Task<int> GetRandom()
 		{
-            var number =  new Random(seed).Next(100);
-            _ctx.Numbers.Add(new RandomNumber() { Number = number });
-            _ctx.SaveChanges();
-			return number;
-		}
+            int number;
+            bool saved = false;
 
+            do
+            {
+                number = new Random(seed).Next(100);
+                try
+                {
+                    _ctx.Numbers.Add(new RandomNumber { Number = number });
+                    await _ctx.SaveChangesAsync();
+                    saved = true;
+                }
+                catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
+                {                    
+                    _ctx.ChangeTracker.Clear();
+                }
+            } while (!saved);
+
+            return number;
+        }
 	}
 }
