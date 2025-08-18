@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ProvaPub.Models;
-using ProvaPub.Repository;
+using ProvaPub.Entities;
+using ProvaPub.Interfaces;
 using ProvaPub.Services;
 
 namespace ProvaPub.Controllers
@@ -16,20 +15,39 @@ namespace ProvaPub.Controllers
     /// Outra parte importante é em relação à data (OrderDate) do objeto Order. Ela deve ser salva no banco como UTC mas deve retornar para o cliente no fuso horário do Brasil. 
     /// Demonstre como você faria isso.
     /// </summary>
+    /// 
     [ApiController]
-	[Route("[controller]")]
-	public class Parte3Controller :  ControllerBase
-	{
-		[HttpGet("orders")]
-		public async Task<Order> PlaceOrder(string paymentMethod, decimal paymentValue, int customerId)
-		{
-            var contextOptions = new DbContextOptionsBuilder<TestDbContext>()
-    .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=Teste;Trusted_Connection=True;")
-    .Options;
+    [Route("[controller]")]
+    public class Parte3Controller : ControllerBase
+    {
+        private readonly IOrderService _orderService;
 
-            using var context = new TestDbContext(contextOptions);
+        public Parte3Controller(IOrderService orderService)
+        {
+            _orderService = orderService;
+        }
 
-            return await new OrderService(context).PayOrder(paymentMethod, paymentValue, customerId);
-		}
-	}
+        [HttpPost("orders")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Order))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<Order>> PlaceOrder([FromQuery] string paymentMethod, [FromQuery] decimal value, [FromQuery] int customerId)
+        {
+            if (value <= 0) return BadRequest("O valor do pagamento deve ser maior que zero.");
+
+            try
+            {
+                var order = await _orderService.PayOrder(paymentMethod, value, customerId);
+                return Ok(order);
+            }
+            catch (ArgumentException exception)
+            {
+                return BadRequest(exception.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Ocorreu um erro inesperado. {ex.Message}");
+            }
+        }
+    }
 }
