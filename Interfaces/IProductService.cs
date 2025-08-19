@@ -1,5 +1,5 @@
 ﻿using ProvaPub.Entities;
-using ProvaPub.Models;
+using ProvaPub.Results;
 
 namespace ProvaPub.Interfaces
 {

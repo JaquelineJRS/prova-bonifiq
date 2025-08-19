@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProvaPub.Entities;
 using ProvaPub.Interfaces;
-using ProvaPub.Models;
 using ProvaPub.Repository;
+using ProvaPub.Results;
 
 namespace ProvaPub.Controllers
 {

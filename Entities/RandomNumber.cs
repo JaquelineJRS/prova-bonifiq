@@ -1,4 +1,4 @@
-﻿namespace ProvaPub.Models
+﻿namespace ProvaPub.Entities
 {
     public class RandomNumber
     {

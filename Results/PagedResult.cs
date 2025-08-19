@@ -1,4 +1,4 @@
-﻿namespace ProvaPub.Models
+﻿namespace ProvaPub.Results
 {
     public class PagedResult<T>
     {

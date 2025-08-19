@@ -1,4 +1,4 @@
-﻿using ProvaPub.Models;
+﻿using ProvaPub.Results;
 
 namespace ProvaPub.Extensions
 {

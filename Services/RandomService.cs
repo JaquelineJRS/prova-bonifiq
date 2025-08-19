@@ -1,16 +1,15 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using ProvaPub.Models;
+using ProvaPub.Entities;
 using ProvaPub.Repository;
-using System;
 
 namespace ProvaPub.Services
 {
-	public class RandomService
-	{
-		int seed;
+    public class RandomService
+    {
+        int seed;
         TestDbContext _ctx;
-		public RandomService()
+        public RandomService()
         {
             var contextOptions = new DbContextOptionsBuilder<TestDbContext>()
     .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=Teste;Trusted_Connection=True;")
@@ -20,7 +19,7 @@ namespace ProvaPub.Services
             _ctx = new TestDbContext(contextOptions);
         }
         public async Task<int> GetRandom()
-		{
+        {
             int number;
             bool saved = false;
 
@@ -34,12 +33,12 @@ namespace ProvaPub.Services
                     saved = true;
                 }
                 catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
-                {                    
+                {
                     _ctx.ChangeTracker.Clear();
                 }
             } while (!saved);
 
             return number;
         }
-	}
+    }
 }
